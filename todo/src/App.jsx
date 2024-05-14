@@ -1,35 +1,64 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './styles.css'
+export default function App(){
 
-function App() {
-  const [count, setCount] = useState(0)
+  const [newItem, setNewItem] = useState("");
+  const [todos, setToDos] = useState([])
+
+
+  function handleSubmit(e){
+    e.preventDefault();
+    // SetToDos([...todos,{id: crypto.randomUUID(),title: newItem, completed: false}])
+    setToDos(currentToDos =>[
+        ...currentToDos,
+        {id: crypto.randomUUID(), title: newItem, completed: false},
+    ])
+    setNewItem('')
+  
+  }
+  function toggleToDo(id, completed){
+    setToDos(currentToDos =>{
+      return currentToDos.map(todo=>{
+        if(todo.id === id){
+          return {...todo, completed}
+        }
+        return todo
+      })
+    })
+  }
+  
+function deleteToDo(id){
+  setToDos(currentToDos =>{
+    return currentToDos.filter(todo => todo.id !== id)
+    })
+  }
+
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <form onSubmit = {handleSubmit} className='new-item-form'>
+          <div className='form-row'>
+          <label htmlFor='item'>New item</label>
+          <input type='text' id='item' value={newItem} onChange={e => setNewItem(e.target.value)}></input>
+          <button className='btn'>Add</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    </form>
+    <h1>To do list</h1>
+    <ul className='list'>
+    {todos.map(todo =>{
+        return (
+          <li key = {todo.id}>
+          <label>
+            <input type='checkbox' checked = {todo.completed} onChange={e=>{
+              toggleToDo(todo.id,e.target.checked)
+            }}></input>{todo.title}
+          </label>
+          <button className='btn btn-danger' onClick={()=>{deleteToDo(todo.id)}}>Delete</button>
+        </li>
+        )
+      })} 
+
+    </ul>
     </>
   )
 }
-
-export default App
